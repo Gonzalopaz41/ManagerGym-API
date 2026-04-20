@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('clients')
 export class Client {
@@ -12,17 +12,18 @@ export class Client {
   phone!: number;
 
   @Column('text', {
-    unique: true
+    unique: true,
+    nullable: true
   })
   email!: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   address!: string;
 
-  @Column('date')
+  @Column('date', { nullable: true })
   birth_date!: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   observation!: string;
 
   @Column('boolean', {
@@ -42,6 +43,11 @@ export class Client {
   })
   updatedAt!: Date;
 
+  @BeforeInsert()
+  checkFieldBeforeInsert() {
+    this.email = this.email.toLowerCase().trim()
+    this.fullname = this.fullname.toLowerCase().trim()
+  }
 
 }
 
