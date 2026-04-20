@@ -4,6 +4,7 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from './entities/client.entity';
 import { Repository } from 'typeorm';
+import { PaginationDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class ClientsService {
@@ -19,14 +20,28 @@ export class ClientsService {
       
       await this.clientRepository.save(client);  
 
+      return client;
     } catch (error) {
       this.handleDBError(error);
     }
   };
 
-  findAll() {
-    return `This action returns all clients`;
-  }
+  async findAll(paginationDto: PaginationDto) {
+    const {limit = 10, page = 1} = paginationDto;
+
+    const [clients, total] = await this.clientRepository.findAndCount({
+      order: {  createdAt: 'DESC' },
+      take: limit,
+      skip: (page - 1) * limit
+    });
+
+    return {
+      clients,
+      total,
+      page,
+      last_page: Math.ceil(total / limit)
+    }
+  };
 
   findOne(id: number) {
     return `This action returns a #${id} client`;
