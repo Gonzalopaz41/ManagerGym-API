@@ -62,11 +62,20 @@ export class ClientsService {
     if(clients.length === 0) throw new NotFoundException(`Client with fullname ${term} not found`);
 
     return clients;
-  }
+  };
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
-  }
+  async update(id: string, updateClientDto: UpdateClientDto) {
+    
+    const clientToUpdate = await this.clientRepository.preload({
+      id,
+      updatedAt: new Date(),
+      ...updateClientDto
+    });
+
+    if(!clientToUpdate) throw new NotFoundException(`Client with id ${id} not found`);
+
+    return this.clientRepository.save(clientToUpdate);
+  };
 
   remove(id: number) {
     return `This action removes a #${id} client`;

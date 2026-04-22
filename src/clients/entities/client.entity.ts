@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('clients')
 export class Client {
@@ -45,6 +45,12 @@ export class Client {
 
   @BeforeInsert()
   checkFieldBeforeInsert() {
+    this.email = this.email.toLowerCase().trim()
+    this.fullname = this.fullname.toLowerCase().trim()
+  }
+  
+  @BeforeUpdate()
+  checkFieldBeforeUpdate() {
     this.email = this.email.toLowerCase().trim()
     this.fullname = this.fullname.toLowerCase().trim()
   }
