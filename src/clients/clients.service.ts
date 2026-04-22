@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, ParseUUIDPipe } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from './entities/client.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/pagination.dto';
+import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class ClientsService {
@@ -43,8 +44,24 @@ export class ClientsService {
     }
   };
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findByTerm(term: string) {
+    //Buscar por id
+    if (isUUID(term)) {
+      const client = await this.clientRepository.findOneBy({id: term});
+      
+      if(!client) throw new NotFoundException(`Client with id ${term} not found`);
+      
+      return client;
+    };
+
+    //Buscar por fullname
+    const clients = await this.clientRepository.find({where: {
+      fullname: ILike(`${term}%`)
+    }})
+
+    if(clients.length === 0) throw new NotFoundException(`Client with fullname ${term} not found`);
+
+    return clients;
   }
 
   update(id: number, updateClientDto: UpdateClientDto) {
