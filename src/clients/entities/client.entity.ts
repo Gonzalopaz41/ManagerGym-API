@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('clients')
 export class Client {
@@ -42,6 +42,10 @@ export class Client {
     type: 'timestamp'
   })
   updatedAt!: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt!: Date;  // soft delete — null = activa, fecha = eliminada
+
 
   @BeforeInsert()
   checkFieldBeforeInsert() {
