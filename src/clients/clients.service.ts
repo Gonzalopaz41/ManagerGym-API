@@ -77,8 +77,25 @@ export class ClientsService {
     return this.clientRepository.save(clientToUpdate);
   };
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: string) {
+
+    const client = await this.findOneOrFail(id);
+
+    await this.update(id, {active: false} as UpdateClientDto);
+
+    await this.clientRepository.softRemove(client);
+
+    return {
+      message: `Client with id ${id} has been removed`
+    };
+  }
+
+  async findOneOrFail(clientId:string){
+    const client = await this.clientRepository.findOneBy({id: clientId});
+
+    if(!client) throw new NotFoundException(`Client with id ${clientId} not found`);
+    
+    return client;
   }
 
   handleDBError(error: any){

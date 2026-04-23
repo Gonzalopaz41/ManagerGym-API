@@ -32,7 +32,7 @@ export class ClientsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.clientsService.remove(id);
   }
 }
