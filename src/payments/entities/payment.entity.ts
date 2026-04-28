@@ -1,1 +1,45 @@
-export class Payment {}
+import { Client } from "src/clients/entities/client.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+
+export enum PaymentMethod {
+  CASH = 'cash',
+  TRASFER = 'transfer',
+};
+
+@Entity('payments')
+export class Payment {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  //relacion con clientId
+  @ManyToOne(() => Client, (client) => client.payments)
+  @JoinColumn({ name: 'client_id' })
+  clientId!: string;
+
+  // @Column({name: 'client_id', insert: false, update: false, nullable: true})
+  // clientId!: string;
+
+  @Column('numeric')
+  amount!: number;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentMethod,
+    default: PaymentMethod.CASH
+  })
+  method!: PaymentMethod;
+
+  @Column({
+    name: 'payment_date',
+    type: 'timestamp',
+    nullable: true
+  })
+  paymentDate!: Date;
+
+  @Column({
+    name: 'expiration_date',
+    type: 'timestamp',
+    nullable: true
+  })
+  expirationDate!: Date;
+}

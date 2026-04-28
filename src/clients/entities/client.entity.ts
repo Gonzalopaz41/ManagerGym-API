@@ -1,9 +1,13 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Payment } from "src/payments/entities/payment.entity";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('clients')
 export class Client {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
+
+  @OneToMany(() => Payment, (payment) => payment.clientId)
+  payments!: Payment[];
 
   @Column('text')
   fullname!: string;
