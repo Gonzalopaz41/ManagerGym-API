@@ -33,7 +33,8 @@ export class ClientsService {
     const [clients, total] = await this.clientRepository.findAndCount({
       order: {  createdAt: 'DESC' },
       take: limit,
-      skip: (page - 1) * limit
+      skip: (page - 1) * limit,
+      relations: ['payments']
     });
 
     return {
