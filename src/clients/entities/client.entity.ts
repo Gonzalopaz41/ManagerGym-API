@@ -6,7 +6,7 @@ export class Client {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @OneToMany(() => Payment, (payment) => payment.clientId)
+  @OneToMany(() => Payment, (payment) => payment.client)
   payments!: Payment[];
 
   @Column('text')

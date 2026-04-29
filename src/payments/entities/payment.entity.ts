@@ -12,12 +12,16 @@ export class Payment {
   id!: string;
 
   //relacion con clientId
-  @ManyToOne(() => Client, (client) => client.payments)
-  @JoinColumn({ name: 'client_id' })
-  clientId!: string;
-
-  // @Column({name: 'client_id', insert: false, update: false, nullable: true})
+  // @ManyToOne(() => Client, (client) => client.payments)
+  // @JoinColumn({ name: 'client_id' })
   // clientId!: string;
+
+ @ManyToOne(() => Client, (client) => client.payments)
+  @JoinColumn({ name: 'client_id' })
+  client!: Client;  // ← propiedad de la relación, tipo Client
+
+  @Column({name: 'client_id'})
+  clientId!: string;  // ← propiedad para almacenar el ID del cliente
 
   @Column('numeric')
   amount!: number;
