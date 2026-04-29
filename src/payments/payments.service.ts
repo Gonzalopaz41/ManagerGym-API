@@ -4,32 +4,55 @@ import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { Repository } from 'typeorm';
+import { PaginationDto } from 'src/common/pagination.dto';
+import { Client } from 'src/clients/entities/client.entity';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     @InjectRepository(Payment)
-    private readonly paymentRepository: Repository<Payment>
+    private readonly paymentRepository: Repository<Payment>,
+
+    @InjectRepository(Client)
+    private readonly clientRepository: Repository<Client>
   ) {}
 
   async generatedPayment(createPaymentDto: CreatePaymentDto, clientId: string) {
+
+    // const client = await this.clientRepository.findOneBy({ id: clientId });
+    // if (!client) throw new Error(`Client with id ${clientId} not found`);
 
     const paymentDate = new Date(createPaymentDto.paymentDate);
     const expirationDate = new Date(paymentDate);
     expirationDate.setDate(expirationDate.getDate() + 30); // Example: 30-day expiration
 
     const paymentGenerated = this.paymentRepository.create({
-      ...createPaymentDto,
-      clientId: clientId,
+      amount: createPaymentDto.amount,
+      method: createPaymentDto.method,
       expirationDate,
-      paymentDate
-     });
+      paymentDate,
+      clientId
+    });
      
     return this.paymentRepository.save(paymentGenerated);
   };
 
-  findAll() {
-    return `This action returns all payments`;
+  async findAllPayments(paginationDto: PaginationDto) {
+    const {limit = 10, page = 1} = paginationDto;
+
+    const [payments, total] = await this.paymentRepository.findAndCount({
+      order: { expirationDate: 'DESC' },
+      take: limit,
+      skip: (page - 1) * limit,
+      relations: ['client']
+    });
+
+    return {
+      payments,
+      total,
+      page,
+      last_page: Math.ceil(total / limit)
+    };
   }
 
   findOne(id: number) {
