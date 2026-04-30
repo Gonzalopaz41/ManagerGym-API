@@ -6,6 +6,7 @@ import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/pagination.dto';
 import { Client } from 'src/clients/entities/client.entity';
+import { FilterPaymentDto } from './dto/filter-payment.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -37,15 +38,28 @@ export class PaymentsService {
     return this.paymentRepository.save(paymentGenerated);
   };
 
-  async findAllPayments(paginationDto: PaginationDto) {
-    const {limit = 10, page = 1} = paginationDto;
+  async findAllPayments(filterPaymentDto: FilterPaymentDto) {
+    const {limit = 10, page = 1, status} = filterPaymentDto;
+    
+    const qb = this.paymentRepository
+    .createQueryBuilder('payment')
+    .leftJoinAndSelect('payment.client', 'client')  // trae los datos del cliente
+    .orderBy('payment.expirationDate', 'DESC')
+    .take(limit)
+    .skip((page - 1) * limit);
 
-    const [payments, total] = await this.paymentRepository.findAndCount({
-      order: { expirationDate: 'DESC' },
-      take: limit,
-      skip: (page - 1) * limit,
-      relations: ['client']
-    });
+      if (status) {
+    qb.where('payment.status = :status', { status });
+  } 
+
+      const [payments, total] = await qb.getManyAndCount();
+    
+    // const [payments, total] = await this.paymentRepository.findAndCount({
+    //   order: { expirationDate: 'DESC' },
+    //   take: limit,
+    //   skip: (page - 1) * limit,
+    //   relations: ['client']
+    // });
 
     return {
       payments,
