@@ -43,17 +43,18 @@ export class PaymentsService {
     
     const qb = this.paymentRepository
       .createQueryBuilder('payment')
-      .leftJoinAndSelect('payment.client', 'client')  // trae los datos del cliente
+      .leftJoinAndSelect('payment.client', 'client')
+      .where('1=1')  // trae los datos del cliente
       .orderBy('payment.expirationDate', 'DESC')
       .take(limit)
       .skip((page - 1) * limit);
 
       if (status) {
-      qb.where('payment.status = :status', { status });
+      qb.andWhere('payment.status = :status', { status });
       };
 
       if(clientId){
-        qb.where('payment.clientId = :clientId', {clientId});
+        qb.andWhere('payment.clientId = :clientId', {clientId});
       };
       
       const [payments, total] = await qb.getManyAndCount();
