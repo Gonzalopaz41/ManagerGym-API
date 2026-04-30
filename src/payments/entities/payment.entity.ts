@@ -6,6 +6,12 @@ export enum PaymentMethod {
   TRASFER = 'transfer',
 };
 
+export enum PaymentStatus {
+  ACTIVE = 'active',
+  EXPIRED = 'expired',
+  ARCHIVED = 'archived'
+};
+
 @Entity('payments')
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
@@ -46,4 +52,19 @@ export class Payment {
     nullable: true
   })
   expirationDate!: Date;
+
+  @Column({
+    name: 'is_paid',
+    type: 'boolean',
+    default: false
+  })
+  isPaid!: boolean;
+
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: PaymentStatus,
+    default: PaymentStatus.ACTIVE,
+  })
+  status!: PaymentStatus;
 }
