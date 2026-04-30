@@ -16,6 +16,13 @@ export class PaymentsController {
     return this.paymentsService.generatedPayment(createPaymentDto, clientId);
   }
 
+  @Patch(':paymentId/archive')
+  archivePayment(
+    @Param('paymentId', ParseUUIDPipe) paymentId: string,
+  ){
+    return this.paymentsService.archivePayment(paymentId);
+  }
+
   @Get()
   findAll(
     @Query() paginationDto: PaginationDto

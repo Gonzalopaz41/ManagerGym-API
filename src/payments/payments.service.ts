@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Payment } from './entities/payment.entity';
+import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/pagination.dto';
 import { Client } from 'src/clients/entities/client.entity';
@@ -53,7 +53,18 @@ export class PaymentsService {
       page,
       last_page: Math.ceil(total / limit)
     };
-  }
+  };
+
+  // Método para archivar un pago
+  async archivePayment(paymentId: string){
+    const payment = await this.paymentRepository.findOneBy({id: paymentId});
+    if(!payment) throw new NotFoundException(`Payment with id ${paymentId} not found`);
+    if(payment.status !== PaymentStatus.EXPIRED) throw new BadRequestException(`Only expired payments can be archived`);
+    
+    payment.status = PaymentStatus.ARCHIVED;
+    
+    return this.paymentRepository.save(payment);
+  };
 
   findOne(id: number) {
     return `This action returns a #${id} payment`;
