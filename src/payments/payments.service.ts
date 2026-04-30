@@ -39,19 +39,23 @@ export class PaymentsService {
   };
 
   async findAllPayments(filterPaymentDto: FilterPaymentDto) {
-    const {limit = 10, page = 1, status} = filterPaymentDto;
+    const {limit = 10, page = 1, status, clientId} = filterPaymentDto;
     
     const qb = this.paymentRepository
-    .createQueryBuilder('payment')
-    .leftJoinAndSelect('payment.client', 'client')  // trae los datos del cliente
-    .orderBy('payment.expirationDate', 'DESC')
-    .take(limit)
-    .skip((page - 1) * limit);
+      .createQueryBuilder('payment')
+      .leftJoinAndSelect('payment.client', 'client')  // trae los datos del cliente
+      .orderBy('payment.expirationDate', 'DESC')
+      .take(limit)
+      .skip((page - 1) * limit);
 
       if (status) {
-    qb.where('payment.status = :status', { status });
-  } 
+      qb.where('payment.status = :status', { status });
+      };
 
+      if(clientId){
+        qb.where('payment.clientId = :clientId', {clientId});
+      };
+      
       const [payments, total] = await qb.getManyAndCount();
     
     // const [payments, total] = await this.paymentRepository.findAndCount({
@@ -80,15 +84,4 @@ export class PaymentsService {
     return this.paymentRepository.save(payment);
   };
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
-
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
-  }
 }
