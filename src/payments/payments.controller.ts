@@ -3,6 +3,7 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PaginationDto } from 'src/common/pagination.dto';
+import { FilterPaymentDto } from './dto/filter-payment.dto';
 
 @Controller('payments')
 export class PaymentsController {
@@ -25,9 +26,9 @@ export class PaymentsController {
 
   @Get()
   findAll(
-    @Query() paginationDto: PaginationDto
+    @Query() filterPaymentDto: FilterPaymentDto
   ) {
-    return this.paymentsService.findAllPayments(paginationDto);
+    return this.paymentsService.findAllPayments(filterPaymentDto);
   }
 
   @Get(':id')
