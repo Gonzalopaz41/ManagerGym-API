@@ -34,7 +34,7 @@ export class CreateClientDto {
 
   @ApiProperty({ description: 'Observations or goals about the client', example: 'Client is interested in personal training sessions' })
   @IsString()
-  @MinLength(1)
+  // @MinLength(1)
   @MaxLength(500)
   @IsOptional()
   observation?: string;

@@ -46,9 +46,12 @@ export class ClientsService {
   };
 
   async findByTerm(term: string) {
-    //Buscar por id
+    //Buscar por id o termino de busqueda, si es un UUID buscar por id, sino buscar por fullname
     if (isUUID(term)) {
-      const client = await this.clientRepository.findOneBy({id: term});
+      const client = await this.clientRepository.findOne({
+        where: { id: term },
+        relations: ['payments']
+      });
       
       if(!client) throw new NotFoundException(`Client with id ${term} not found`);
       

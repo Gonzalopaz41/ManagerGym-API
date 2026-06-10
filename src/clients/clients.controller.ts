@@ -20,14 +20,14 @@ export class ClientsController {
 
   @Get()
   @ApiOperation({ summary: 'Find all clients' })
-  @ApiResponse({ status: 200, description: 'Return all clients' })
+  @ApiResponse({ status: 200, description: 'Return all clients and payments' })
   findAll(@Query() paginationDto: PaginationDto) {
     return this.clientsService.findAll(paginationDto);
   }
 
   @Get(':term')
   @ApiOperation({ summary: 'Find client by term or ID' })
-  @ApiResponse({ status: 200, description: 'Return client matching the term' })
+  @ApiResponse({ status: 200, description: 'Return client matching the term or ID' })
   @ApiResponse({ status: 404, description: 'Client not found' })
   findByTerm(@Param('term') term: string) {
     return this.clientsService.findByTerm(term);
