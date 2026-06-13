@@ -1,10 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PaginationDto } from 'src/common/pagination.dto';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guard/auth-guard.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/entities/user.entity';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Base)
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) { }
@@ -24,7 +30,7 @@ export class ClientsController {
   findAll(@Query() paginationDto: PaginationDto) {
     return this.clientsService.findAll(paginationDto);
   }
-
+  
   @Get(':term')
   @ApiOperation({ summary: 'Find client by term or ID' })
   @ApiResponse({ status: 200, description: 'Return client matching the term or ID' })

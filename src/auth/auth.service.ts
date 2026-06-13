@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, ParseUUIDPipe, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -7,6 +7,7 @@ import * as bcrypt from "bcrypt";
 import { LoginUserDto } from './dto/login-user.dto';
 import { RefreshTokens } from './entities/refresh_tokens.entity';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 
 
@@ -43,10 +44,11 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto){
     const user = await this.userRepository.findOne({
       where: {userName: loginUserDto.userName},
-      select: ['id', 'Role', 'userName', 'password'],
+      select: ['id', 'Role', 'userName', 'password', 'isActive'],
     });
 
     if(!user) throw new UnauthorizedException('User not found');
+    if(!user.isActive) throw new UnauthorizedException('User is inactive');
 
     const userValid = await bcrypt.compare(loginUserDto.password, user.password)
     if (!userValid) throw new UnauthorizedException('Invalid credentials');
@@ -126,7 +128,32 @@ export class AuthService {
 
   async getAllUsers(){
 
+    const users = await this.userRepository.find();
 
+    return {users};
+  };
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto){
+
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', {id})
+      .getOne();
+
+    if(!user) throw new NotFoundException('User not found');
+
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    };
+
+    Object.assign(user, updateUserDto);
+
+    await this.userRepository.save(user);
+
+    const {password, ...userReturn} = user;
+
+    return userReturn;
   };
 
   async logout(userId: string){

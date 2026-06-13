@@ -12,11 +12,15 @@ export class RolesGuard implements CanActivate {
     
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY,[
       context.getHandler(),
-      context.getClass
+      context.getClass()
     ]);
     
     if(!requiredRoles) return true;// Sin @Roles -> Ruta publica
+    
     const {user} = context.switchToHttp().getRequest()
+    
+    if(user.role === Role.Admin) return true;
+    
     return requiredRoles.includes(user.role);
     
   }
