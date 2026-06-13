@@ -1,27 +1,27 @@
 import { IsEnum, IsOptional, IsPositive, IsUUID, Min } from "class-validator";
 import { PaymentStatus } from "../entities/payment.entity";
 import { Type } from "class-transformer";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class FilterPaymentDto {
 
-  @ApiProperty({ description: 'Status of the payment', example: PaymentStatus.ARCHIVED, required: false })
+  @ApiPropertyOptional({ description: 'Filter by payment status', enum: PaymentStatus, example: PaymentStatus.ACTIVE })
   @IsOptional()
   @IsEnum(PaymentStatus)
   status?: PaymentStatus;
 
-  @ApiProperty({ description: 'Client ID', example: 'client-123', required: false })
+  @ApiPropertyOptional({ description: 'Filter by client UUID', example: '550e8400-e29b-41d4-a716-446655440000' })
   @IsOptional()
   @IsUUID()
   clientId?: string;
 
-  @ApiProperty({ description: 'Page number', example: 1, required: false })
+  @ApiPropertyOptional({ description: 'Page number', example: 1, default: 1 })
   @IsOptional()
   @Type(() => Number)
   @IsPositive()
   page?: number = 1;
 
-  @ApiProperty({ description: 'Number of items per page', example: 10, required: false })
+  @ApiPropertyOptional({ description: 'Number of results per page', example: 10, default: 10 })
   @IsOptional()
   @Type(() => Number)
   @Min(1)
