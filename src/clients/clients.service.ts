@@ -69,16 +69,21 @@ export class ClientsService {
   };
 
   async update(id: string, updateClientDto: UpdateClientDto) {
+
+    try {
+        const clientToUpdate = await this.clientRepository.preload({
+          id,
+          updatedAt: new Date(),
+          ...updateClientDto
+        });
     
-    const clientToUpdate = await this.clientRepository.preload({
-      id,
-      updatedAt: new Date(),
-      ...updateClientDto
-    });
-
-    if(!clientToUpdate) throw new NotFoundException(`Client with id ${id} not found`);
-
-    return this.clientRepository.save(clientToUpdate);
+        if(!clientToUpdate) throw new NotFoundException(`Client with id ${id} not found`);
+    
+        return this.clientRepository.save(clientToUpdate);
+    } catch (error) {
+      this.handleDBError(error);
+    }
+    
   };
 
   async remove(id: string) {
