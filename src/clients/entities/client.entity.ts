@@ -53,13 +53,13 @@ export class Client {
 
   @BeforeInsert()
   checkFieldBeforeInsert() {
-    this.email = this.email.toLowerCase().trim()
+    if(this.email) this.email = this.email.toLowerCase().trim()
     this.fullname = this.fullname.toLowerCase().trim()
   }
   
   @BeforeUpdate()
   checkFieldBeforeUpdate() {
-    this.email = this.email.toLowerCase().trim()
+    if(this.email) this.email = this.email.toLowerCase().trim()
     this.fullname = this.fullname.toLowerCase().trim()
   }
 
