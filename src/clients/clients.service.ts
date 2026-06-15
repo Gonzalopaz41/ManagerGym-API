@@ -103,6 +103,7 @@ export class ClientsService {
   }
 
   handleDBError(error: any){
+    console.log(error)
     if(error.code === '23505') {
       throw new BadRequestException(error.detail);
     }
