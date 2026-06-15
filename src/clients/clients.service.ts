@@ -79,7 +79,9 @@ export class ClientsService {
     
         if(!clientToUpdate) throw new NotFoundException(`Client with id ${id} not found`);
     
-        return this.clientRepository.save(clientToUpdate);
+        const clientUpdated = await this.clientRepository.save(clientToUpdate);
+        
+        return clientUpdated;
     } catch (error) {
       this.handleDBError(error);
     }
