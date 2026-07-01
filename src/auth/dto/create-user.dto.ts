@@ -1,4 +1,4 @@
-import { IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsBoolean, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Role } from "../entities/user.entity";
 
@@ -22,4 +22,8 @@ export class CreateUserDto {
   @ApiPropertyOptional({ enum: Role, default: Role.Base })
   @IsOptional()
   Role?: Role;
+  
+  @IsOptional()
+  @IsBoolean()
+  isActive?:boolean;
 }
