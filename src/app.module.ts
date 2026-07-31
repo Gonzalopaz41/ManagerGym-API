@@ -8,6 +8,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { WorkoutModule } from './workout/workout.module';
+import { ProgressModule } from './progress/progress.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { WorkoutModule } from './workout/workout.module';
     ClientsModule,
     PaymentsModule,
     AuthModule,
-    WorkoutModule],
+    WorkoutModule,
+    ProgressModule],
   controllers: [AppController],
   providers: [AppService],
 })

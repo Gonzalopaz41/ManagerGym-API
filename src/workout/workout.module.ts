@@ -4,11 +4,10 @@ import { WorkoutController } from './workout.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryEntity } from './entities/category.entity';
 import { ExerciseEntity } from './entities/exercise.entity';
-import { ProgressEntity } from './entities/progress.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CategoryEntity, ExerciseEntity, ProgressEntity])
+    TypeOrmModule.forFeature([CategoryEntity, ExerciseEntity])
   ],
   controllers: [WorkoutController],
   providers: [WorkoutService],

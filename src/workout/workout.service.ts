@@ -30,6 +30,16 @@ export class WorkoutService {
       this.handleDbError(error)
     }
   };
+
+  async getAllCategories(){
+    try {
+      return await this.categoryRepository.find()
+
+    } catch (error) {
+      console.log(error)
+      this.handleDbError(error);
+    }    
+  };
   
   async getCategoryById(categoryId: string){
     try {
@@ -95,6 +105,16 @@ export class WorkoutService {
     }
   };
 
+   async getAllExercises(){
+    try {
+      return await this.exerciseRepository.find({relations:['category']})
+      
+    } catch (error) {
+      console.log(error)
+      this.handleDbError(error);
+    }    
+  };
+
 
   async getExercisesByCategory(categoryId:string){
     try {
@@ -134,7 +154,7 @@ export class WorkoutService {
       await this.exerciseRepository.remove(exercise);
 
       return {message: `Exercise ${exerciseId} deleted succesfully`}
-      
+
     } catch (error) {
       console.log(error)
       this.handleDbError(error)
