@@ -102,6 +102,7 @@ export class WorkoutService {
       
     } catch (error) {
       console.log(error)
+      this.handleDbError(error)
     }
   };
 
