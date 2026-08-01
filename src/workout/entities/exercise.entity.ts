@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CategoryEntity } from "./category.entity";
 
 @Entity('exercises')
@@ -19,4 +19,15 @@ export class ExerciseEntity {
 
   @Column({ name: 'category_id' })
   categoryId!: string;
+
+  @BeforeInsert()
+  checkFieldBeforeInsert(){
+    if(this.name) this.name = this.name.toLowerCase().trim();
+  };
+
+  @BeforeUpdate()
+  checkFieldBeforeUpdate(){
+    if(this.name) this.name = this.name.toLowerCase().trim();
+  };
+
 };

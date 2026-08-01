@@ -97,7 +97,7 @@ export class WorkoutController {
   @Post('exercises')
   @ApiOperation({ summary: 'Create a new exercise inside a category' })
   @ApiResponse({ status: 201, description: 'Exercise created successfully', schema: { example: { id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e', name: 'press banca', description: 'press de banca con barra', categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7' } } })
-  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @ApiResponse({ status: 400, description: 'Invalid input data, or an exercise with that name or description already exists' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   createExercise(@Body() createExercise: CreateExerciseDto) {
     return this.workoutService.createExercise(createExercise);

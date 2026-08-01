@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ExerciseEntity } from "./exercise.entity";
 
 @Entity('categories')
@@ -12,4 +12,14 @@ export class CategoryEntity {
 
   @OneToMany(()=> ExerciseEntity, (exercise)=> exercise.category)
   exercises!: ExerciseEntity[];
+
+  @BeforeInsert()
+    checkFieldBeforeInsert() {
+      if(this.name) this.name = this.name.toLowerCase().trim()
+    };
+    
+    @BeforeUpdate()
+    checkFieldBeforeUpdate() {
+      if(this.name) this.name = this.name.toLowerCase().trim()
+    };
 }
