@@ -19,7 +19,26 @@ export class ClientsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new client' })
-  @ApiResponse({ status: 201, description: 'Client created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the created client, with the same shape as GET clients/:term. payments is always an empty array here',
+    schema: {
+      example: {
+        id: '9c1e2b1a-7c4b-4a2e-9f3d-1b2c3d4e5f60',
+        fullname: 'carlos perez',
+        phone: 3811234567,
+        email: 'email@example.com',
+        address: 'San Martin 333',
+        birth_date: '1990-06-23',
+        observation: 'Interested in personal training sessions',
+        active: true,
+        createdAt: '2026-06-13T18:24:00.000Z',
+        updatedAt: '2026-06-13T18:24:00.000Z',
+        deletedAt: null,
+        payments: [],
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data or email already exists' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   create(@Body() createClientDto: CreateClientDto) {
@@ -49,7 +68,28 @@ export class ClientsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update a client by UUID' })
   @ApiParam({ name: 'id', description: 'UUID of the client to update' })
-  @ApiResponse({ status: 200, description: 'Client updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated client including its payments, with the same shape as GET clients/:term, so the response can be written straight into the store without refetching',
+    schema: {
+      example: {
+        id: '9c1e2b1a-7c4b-4a2e-9f3d-1b2c3d4e5f60',
+        fullname: 'carlos perez',
+        phone: 3811234567,
+        email: 'email@example.com',
+        address: 'San Martin 333',
+        birth_date: '1990-06-23',
+        observation: 'Interested in personal training sessions',
+        active: true,
+        createdAt: '2026-06-13T18:24:00.000Z',
+        updatedAt: '2026-07-01T10:00:00.000Z',
+        deletedAt: null,
+        payments: [
+          { id: '4f3e2d1c-0b9a-4876-8f7e-6d5c4b3a2f1e', amount: 5000, method: 'cash', status: 'active', paymentDate: '2026-06-13', expirationDate: '2026-07-13', clientId: '9c1e2b1a-7c4b-4a2e-9f3d-1b2c3d4e5f60' },
+        ],
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid UUID or email already taken' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   @ApiResponse({ status: 404, description: 'Client not found' })
