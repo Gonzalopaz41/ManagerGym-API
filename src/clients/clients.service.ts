@@ -18,10 +18,14 @@ export class ClientsService {
   async createClient(createClientDto: CreateClientDto) {
     try {
       const client = this.clientRepository.create(createClientDto);
-      
-      await this.clientRepository.save(client);  
 
-      return client;
+      await this.clientRepository.save(client);
+
+      //lo recargamos con sus pagos para devolver la misma forma que el GET
+      return await this.clientRepository.findOne({
+        where: {id: client.id},
+        relations: ['payments']
+      });
     } catch (error) {
       this.handleDBError(error);
     }
@@ -79,9 +83,13 @@ export class ClientsService {
     
         if(!clientToUpdate) throw new NotFoundException(`Client with id ${id} not found`);
     
-        const clientUpdated = await this.clientRepository.save(clientToUpdate);
-        
-        return clientUpdated;
+        await this.clientRepository.save(clientToUpdate);
+
+        //lo recargamos con sus pagos para devolver la misma forma que el GET
+        return await this.clientRepository.findOne({
+          where: {id},
+          relations: ['payments']
+        });
     } catch (error) {
       this.handleDBError(error);
     }

@@ -20,7 +20,11 @@ export class WorkoutController {
   //CATEGORIES
   @Post('categories')
   @ApiOperation({ summary: 'Create a new exercise category (muscle group)' })
-  @ApiResponse({ status: 201, description: 'Category created successfully', schema: { example: { id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', name: 'pecho' } } })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the created category, with the same shape as GET categories/:categoryId. exercises is always an empty array here',
+    schema: { example: { id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', name: 'pecho', exercises: [] } },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data or a category with that name already exists' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   createCategory(@Body() createCategory: CreateCategoryDto) {
@@ -70,7 +74,19 @@ export class WorkoutController {
   @Patch('categories/:categoryId')
   @ApiOperation({ summary: 'Update a category by UUID' })
   @ApiParam({ name: 'categoryId', description: 'UUID of the category to update' })
-  @ApiResponse({ status: 200, description: 'Category updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated category including its exercises, with the same shape as GET categories/:categoryId, so the response can be written straight into the store without refetching',
+    schema: {
+      example: {
+        id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7',
+        name: 'pecho',
+        exercises: [
+          { id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e', name: 'press banca', description: 'press de banca con barra', categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7' },
+        ],
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data or the new name is already taken' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   @ApiResponse({ status: 404, description: 'Category not found' })
@@ -96,7 +112,7 @@ export class WorkoutController {
 
   @Post('exercises')
   @ApiOperation({ summary: 'Create a new exercise inside a category' })
-  @ApiResponse({ status: 201, description: 'Exercise created successfully', schema: { example: { id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e', name: 'press banca', description: 'press de banca con barra', categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7' } } })
+  @ApiResponse({ status: 201, description: 'Exercise created successfully, including its category', schema: { example: { id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e', name: 'press banca', description: 'press de banca con barra', categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', category: { id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', name: 'pecho' } } } })
   @ApiResponse({ status: 400, description: 'Invalid input data, or an exercise with that name or description already exists' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   createExercise(@Body() createExercise: CreateExerciseDto) {
@@ -152,7 +168,19 @@ export class WorkoutController {
   @Patch('exercises/:exerciseId')
   @ApiOperation({ summary: 'Update an exercise by UUID' })
   @ApiParam({ name: 'exerciseId', description: 'UUID of the exercise to update' })
-  @ApiResponse({ status: 200, description: 'Exercise updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated exercise including its category, with the same shape as GET exercises, so the response can be written straight into the store without refetching',
+    schema: {
+      example: {
+        id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e',
+        name: 'press banca',
+        description: 'press de banca con barra',
+        categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7',
+        category: { id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', name: 'pecho' },
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data or the new name is already taken' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   @ApiResponse({ status: 404, description: 'Exercise not found' })

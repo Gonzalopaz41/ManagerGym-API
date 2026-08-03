@@ -18,7 +18,30 @@ export class ProgressController {
   @Post()
   @ApiOperation({ summary: 'Record a new progress entry of an exercise for a client' })
   @ApiParam({ name: 'clientId', description: 'UUID of the client the progress belongs to' })
-  @ApiResponse({ status: 201, description: 'Progress recorded successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the recorded progress including its exercise and the category of that exercise, with the same shape as the items of GET clients/:clientId/progress, so the response can be written straight into the store without refetching',
+    schema: {
+      example: {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        clientId: '9c1e2b1a-7c4b-4a2e-9f3d-1b2c3d4e5f60',
+        exerciseId: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e',
+        sets: 4,
+        reps: 10,
+        weight: 60.5,
+        notes: 'le costó la última serie',
+        recordedAt: '2026-06-13',
+        createdAt: '2026-06-13T18:24:00.000Z',
+        exercise: {
+          id: 'b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e',
+          name: 'press banca',
+          description: 'press de banca con barra',
+          categoryId: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7',
+          category: { id: 'a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7', name: 'pecho' },
+        },
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data or invalid UUID format' })
   @ApiResponse({ status: 401, description: 'Unauthorized - valid JWT required' })
   @ApiResponse({ status: 404, description: 'Client or exercise not found' })
