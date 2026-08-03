@@ -35,7 +35,13 @@ export class PaymentsService {
       clientId
     });
      
-    return this.paymentRepository.save(paymentGenerated);
+    const {id} = await this.paymentRepository.save(paymentGenerated);
+
+    //lo recargamos con el cliente para devolver la misma forma que el GET
+    return await this.paymentRepository.findOne({
+      where: {id},
+      relations: ['client']
+    });
   };
 
   async findAllPayments(filterPaymentDto: FilterPaymentDto) {
@@ -81,8 +87,14 @@ export class PaymentsService {
     if(payment.status !== PaymentStatus.EXPIRED) throw new BadRequestException(`Only expired payments can be archived`);
     
     payment.status = PaymentStatus.ARCHIVED;
-    
-    return this.paymentRepository.save(payment);
+
+    await this.paymentRepository.save(payment);
+
+    //lo recargamos con el cliente para devolver la misma forma que el GET
+    return await this.paymentRepository.findOne({
+      where: {id: paymentId},
+      relations: ['client']
+    });
   };
 
 }

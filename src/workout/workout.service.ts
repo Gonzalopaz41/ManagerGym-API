@@ -23,8 +23,14 @@ export class WorkoutService {
   async createCategory(createCategory: CreateCategoryDto) {
     try {
       const category = this.categoryRepository.create(createCategory)
-  
-      return await this.categoryRepository.save(category)
+
+      const {id} = await this.categoryRepository.save(category)
+
+      //la recargamos con sus ejercicios para devolver la misma forma que el GET
+      return await this.categoryRepository.findOne({
+        where: {id},
+        relations: ['exercises']
+      })
     } catch (error) {
       console.log(error)
       this.handleDbError(error)
@@ -68,7 +74,13 @@ export class WorkoutService {
 
       if(!category) throw new NotFoundException('Category not found');
 
-      return await this.categoryRepository.save(category);
+      await this.categoryRepository.save(category);
+
+      //la recargamos con sus ejercicios para devolver la misma forma que el GET
+      return await this.categoryRepository.findOne({
+        where: {id: categoryId},
+        relations: ['exercises']
+      });
 
     } catch (error) {
       console.log(error)
@@ -98,8 +110,14 @@ export class WorkoutService {
   async createExercise(createExercise: CreateExerciseDto) {
     try {
       const exercise = this.exerciseRepository.create(createExercise)
-      return await this.exerciseRepository.save(exercise)
-      
+      const {id} = await this.exerciseRepository.save(exercise)
+
+      //lo recargamos con la categoria para devolver siempre la misma forma
+      return await this.exerciseRepository.findOne({
+        where: {id},
+        relations: ['category']
+      })
+
     } catch (error) {
       console.log(error)
       this.handleDbError(error)
@@ -138,7 +156,13 @@ export class WorkoutService {
 
       if(!exercise) throw new NotFoundException('Exercise not found');
 
-      return await this.exerciseRepository.save(exercise);
+      await this.exerciseRepository.save(exercise);
+
+      //lo recargamos con la categoria para devolver la misma forma que el GET
+      return await this.exerciseRepository.findOne({
+        where: {id: exerciseId},
+        relations: ['category']
+      });
 
     } catch (error) {
       console.log(error)

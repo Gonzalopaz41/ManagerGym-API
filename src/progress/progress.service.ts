@@ -37,7 +37,13 @@ export class ProgressService {
         clientId,
       });
 
-      return await this.progressRepository.save(progress);
+      const {id} = await this.progressRepository.save(progress);
+
+      //lo recargamos con el ejercicio para devolver la misma forma que el GET
+      return await this.progressRepository.findOne({
+        where: {id},
+        relations: ['exercise', 'exercise.category']
+      });
     } catch (error) {
       console.log(error)
       this.handleDBError(error)
@@ -69,7 +75,7 @@ export class ProgressService {
 
       return await this.progressRepository.find({
         where: {clientId, exerciseId},
-        relations: ['exercise'],
+        relations: ['exercise', 'exercise.category'],
         order: {recordedAt: 'DESC'}
       });
   
