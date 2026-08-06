@@ -55,7 +55,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(
       {sub: user.id, userName: user.userName, role: user.Role},
-      {secret: process.env.JWT_SECRET, expiresIn: '15m'}
+      {secret: process.env.JWT_SECRET, expiresIn: '1d'}
     );
 
     const refreshToken = this.jwtService.sign(
@@ -118,7 +118,7 @@ export class AuthService {
 
     const newAccessToken = this.jwtService.sign(
       {sub: user.id, userName: user.userName, role: user.Role},
-      {secret: process.env.JWT_SECRET, expiresIn: '15m'}
+      {secret: process.env.JWT_SECRET, expiresIn: '1d'}
     );
 
     return {
