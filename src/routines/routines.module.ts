@@ -6,12 +6,13 @@ import { Routine } from './entities/routine.entity';
 import { RoutineDay } from './entities/routine-day.entity';
 import { RoutineItem } from './entities/routine-item.entity';
 import { Client } from 'src/clients/entities/client.entity';
+import { RoutineAssignment } from './entities/routine-assigment.entity';
 
 @Module({
   controllers: [RoutinesController],
   providers: [RoutinesService],
   imports: [
-    TypeOrmModule.forFeature([Routine, RoutineDay, RoutineItem, Client])
+    TypeOrmModule.forFeature([Routine, RoutineDay, RoutineItem, Client, RoutineAssignment])
   ]
 })
 export class RoutinesModule {}
