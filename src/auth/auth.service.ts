@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
+import { createHash } from "crypto";
 import { LoginUserDto } from './dto/login-user.dto';
 import { RefreshTokens } from './entities/refresh_tokens.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -65,7 +66,7 @@ export class AuthService {
 
     await this.RefreshTokensRepository.save({
       userId: user.id,
-      token: await bcrypt.hash(refreshToken, 10),
+      token: this.hashRefreshToken(refreshToken),
       expiredAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     });
 
@@ -85,22 +86,16 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Refresh Token');
     };
 
-    //2- Buscamos todos los refresh tokens del usuario que no esten revocados
+    //2- Buscamos ese token exacto entre los del usuario que no esten revocados
 
-    const storedTokens = await this.RefreshTokensRepository.find({
-      where: {userId: payload.sub, revoked: false}
+    const matchedToken = await this.RefreshTokensRepository.findOne({
+      where: {
+        userId: payload.sub,
+        token: this.hashRefreshToken(refreshToken),
+        revoked: false
+      }
     });
 
-    //3- Comparamos el token recibido contra los hasheados en DB
-    let matchedToken: RefreshTokens | null = null;
-
-    for(const stored of storedTokens){
-      const isMatch = await bcrypt.compare(refreshToken, stored.token);
-      if(isMatch){
-        matchedToken = stored;
-        break;
-      }
-    };
     if(!matchedToken) throw new UnauthorizedException('Refresh token revoked');
 
     //4- Verificamos que no haya expirado segun nuestra DB(Doble check)
@@ -164,6 +159,12 @@ export class AuthService {
     return {message: 'Logged out successfully'}
   };
 
+
+  //bcrypt trunca a 72 bytes y los refresh tokens de un mismo usuario comparten ese prefijo,
+  //asi que cualquiera matcheaba con cualquiera. sha256 compara el token entero
+  private hashRefreshToken(token: string){
+    return createHash('sha256').update(token).digest('hex');
+  };
 
   handleBDError(error: any){
     if(error.code === '23505') throw new BadRequestException(error.detail);

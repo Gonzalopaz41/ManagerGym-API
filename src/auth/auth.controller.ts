@@ -8,6 +8,7 @@ import { RolesGuard } from './guard/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -27,7 +28,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Login and obtain access + refresh tokens' })
-  @ApiResponse({ status: 200, description: 'Returns accessToken and refreshToken', schema: { example: { accessToken: 'eyJ...', refreshToken: 'eyJ...' } } })
+  @ApiResponse({ status: 201, description: 'Returns accessToken, valid for 1 day, and refreshToken, valid for 7 days. Send the refreshToken back to auth/refresh under that exact name to get a new accessToken', schema: { example: { accessToken: 'eyJ...', refreshToken: 'eyJ...' } } })
   @ApiResponse({ status: 401, description: 'Invalid credentials or inactive user' })
   @Post('login')
   login(@Body() loginUserDto: LoginUserDto){
@@ -35,12 +36,12 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Refresh access token using a valid refresh token' })
-  @ApiBody({ schema: { properties: { refresh_token: { type: 'string', example: 'eyJ...' } }, required: ['refresh_token'] } })
-  @ApiResponse({ status: 200, description: 'Returns a new accessToken', schema: { example: { accessToken: 'eyJ...' } } })
+  @ApiResponse({ status: 201, description: 'Returns a new accessToken. The refreshToken is not rotated, keep using the one from login until it expires', schema: { example: { accessToken: 'eyJ...' } } })
+  @ApiResponse({ status: 400, description: 'refreshToken is missing or empty' })
   @ApiResponse({ status: 401, description: 'Invalid, expired or revoked refresh token' })
   @Post('refresh')
-  refresh(@Body('refresh_token') refreshToken: string){
-    return this.authService.refresh(refreshToken);
+  refresh(@Body() refreshTokenDto: RefreshTokenDto){
+    return this.authService.refresh(refreshTokenDto.refreshToken);
   }
 
   @ApiOperation({ summary: 'Logout - revokes all active refresh tokens for the current user' })
