@@ -7,10 +7,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { RefreshTokens } from './entities/refresh_tokens.entity';
+import { TokenCleanupCron } from './crons/token-cleanup.crons';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, TokenCleanupCron],
   imports: [
     TypeOrmModule.forFeature([User, RefreshTokens]),
     JwtModule.register({
